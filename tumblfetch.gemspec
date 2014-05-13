@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'tumblr_client', '~> 0.8'
   spec.add_runtime_dependency 'faraday', '= 0.8.9'
+  spec.add_runtime_dependency 'thor'
 
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
