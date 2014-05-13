@@ -1,28 +1,21 @@
 # Tumblfetch
 
-TODO: Write a gem description
+Fetch images from tumblr.
 
 ## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'tumblfetch'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
 
     $ gem install tumblfetch
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ cd ~/path/to/download
+    $ tumblfetch init
+    $ vi .tumblfetch
+    $ tumblfetch
 
 ## Contributing
 
-1. Fork it ( http://github.com/<my-github-username>/tumblfetch/fork )
+1. Fork it ( https://github.com/senosa/tumblfetch/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
