@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Tumblfetch::VERSION
   spec.authors       = ["Sensuke Osawa"]
   spec.email         = ["senosa@gmail.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{Fetch images from tumblr.}
+  spec.description   = %q{Fetch images from tumblr.}
+  spec.homepage      = "https://github.com/senosa/tumblfetch"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
