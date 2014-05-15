@@ -14,4 +14,24 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
+
+  # Captures the output for analysis later
+  #
+  # @example Capture `$stderr`
+  #
+  #     output = capture(:stderr) { $stderr.puts "this is captured" }
+  #
+  # @param [Symbol] stream `:stdout` or `:stderr`
+  # @yield The block to capture stdout/stderr for.
+  # @return [String] The contents of $stdout or $stderr
+  def capture(stream)
+    begin
+      stream = stream.to_s
+      eval "$#{stream} = StringIO.new"
+      yield
+      result = eval("$#{stream}").string
+    ensure
+      eval("$#{stream} = #{stream.upcase}")
+    end
+  end
 end

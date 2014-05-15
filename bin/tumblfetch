@@ -1,11 +1,4 @@
 #!/usr/bin/env ruby
-require 'thor'
-
-class CLI < Thor
-  desc 'version', 'Print a version'
-  def version
-    puts Tumblfetch::VERSION
-  end
-end
+require 'tumblfetch/cli'
 
 CLI.start(ARGV)
