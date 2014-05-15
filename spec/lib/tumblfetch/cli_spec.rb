@@ -3,10 +3,7 @@ require 'tumblfetch/cli'
 
 describe CLI do
   describe '#version' do
-    it 'should print version' do
-      capture(:stdout) do
-        CLI.new.invoke('version')
-      end.strip.should eq Tumblfetch::VERSION
-    end
+    subject { capture(:stdout) { CLI.new.invoke('version') }.strip }
+    it { should be_eql Tumblfetch::VERSION }
   end
 end
