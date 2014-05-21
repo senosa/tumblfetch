@@ -1,18 +1,12 @@
 require 'spec_helper'
-require_relative '../../lib/tumblfetch'
+require 'tumblfetch'
 
 describe Tumblfetch do
-  describe '.init' do
-    context 'when ~/.tumblr does not exist' do
-      it 'should print message running `tumblr`'
-    end
-
-    context 'when ~/.tumblr exist' do
-      it 'should generate Tumblfetchfile'
-    end
-
-    context 'when given base-hostname argument' do
-      it 'should generate correct Tumblfetchfile'
+  describe '.write_settings_template_to' do
+    it 'should write correct template' do
+      testIO = StringIO.new
+      Tumblfetch.write_settings_template_to(testIO)
+      expect(testIO.string).to eq Tumblfetch::SETTINGS_TEMPLATE
     end
   end
 end
