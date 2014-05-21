@@ -10,7 +10,7 @@ describe CLI do
   describe '#init' do
     context 'when .tumblfetch is nonexistent' do
       it 'should generate a .tumblfetch' do
-        CLI.new.invoke('init')
+        capture(:stdout) { CLI.new.invoke('init') }
         File.exist?('./.tumblfetch').should be_true
       end
 
