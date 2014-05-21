@@ -8,9 +8,24 @@ describe CLI do
   end
 
   describe '#init' do
-    it 'should generate a .tumblfetch' do
-      CLI.new.invoke('init')
-      File.exist?('./.tumblfetch').should be_true
+    context 'when .tumblfetch is nonexistent' do
+      it 'should generate a .tumblfetch' do
+        CLI.new.invoke('init')
+        File.exist?('./.tumblfetch').should be_true
+      end
+
+      it 'should print success message' do
+        msg = capture(:stdout) { CLI.new.invoke('init') }
+        expect(msg).to include CLI::SETTINGS_GENERATED_MSG
+      end
+    end
+
+    context 'when .tumblfetch already exist' do
+      it 'should print warning message' do
+        File.open('./.tumblfetch', 'w').close
+        msg = capture(:stderr) { CLI.new.invoke('init') }
+        expect(msg).to include CLI::SETTINGS_EXIST_MSG
+      end
     end
   end
 end
