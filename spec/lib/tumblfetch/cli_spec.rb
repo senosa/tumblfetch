@@ -8,6 +8,14 @@ describe CLI do
   end
 
   describe '#init' do
+    context 'when ~/.tumblr is nonexistent' do
+      it 'should print execute `tumblr`' do
+        File.stub(:exist?).and_return(false)
+        msg = capture(:stderr) { CLI.new.invoke('init') }
+        expect(msg).to include CLI::EXECUTE_TUMBLR_MSG
+      end
+    end
+
     context 'when .tumblfetch is nonexistent' do
       it 'should generate a .tumblfetch' do
         capture(:stdout) { CLI.new.invoke('init') }
