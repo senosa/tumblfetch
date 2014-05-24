@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 require 'tumblfetch/cli'
 
-CLI.start(ARGV)
+Tumblfetch::CLI.start(ARGV)
