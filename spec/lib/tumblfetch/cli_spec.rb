@@ -12,7 +12,7 @@ describe Tumblfetch::CLI, '#init' do
   context 'when ~/.tumblr is nonexistent' do
     it 'should print execute `tumblr`' do
       File.stub(:exist?).and_return(false)
-      output = capture(:stderr) { subject.init }
+      output = capture(:stdout) { subject.init }
       expect(output).to include Tumblfetch::CLI::EXECUTE_TUMBLR_MSG
     end
   end
@@ -33,7 +33,7 @@ describe Tumblfetch::CLI, '#init' do
     context 'when .tumblfetch already exist' do
       it 'should print warning message' do
         File.open('./.tumblfetch', 'w').close
-        output = capture(:stderr) { subject.init }
+        output = capture(:stdout) { subject.init }
         expect(output).to include Tumblfetch::CLI::SETTINGS_EXIST_MSG
       end
     end

@@ -27,7 +27,7 @@ For details, see https://github.com/tumblr/tumblr_client#the-irb-console
     def init
       if File.exist?(File.join(ENV['HOME'], '.tumblr'))
         if File.exist?('./.tumblfetch')
-          $stderr.puts(SETTINGS_EXIST_MSG)
+          puts(SETTINGS_EXIST_MSG)
         else
           File.open('./.tumblfetch', 'w') do |file|
             Tumblfetch.write_settings_template_to(file)
@@ -35,7 +35,7 @@ For details, see https://github.com/tumblr/tumblr_client#the-irb-console
           puts(SETTINGS_GENERATED_MSG)
         end
       else
-        $stderr.puts(EXECUTE_TUMBLR_MSG)
+        puts(EXECUTE_TUMBLR_MSG)
       end
     end
   end
