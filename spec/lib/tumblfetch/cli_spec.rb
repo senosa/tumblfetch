@@ -1,23 +1,23 @@
 require 'spec_helper'
 require 'tumblfetch/cli'
 
-describe Tumblfetch::CLI do
-  describe '#version' do
-    it 'should print correct version' do
-      output = capture(:stdout) { subject.version }
-      expect(output).to include Tumblfetch::VERSION
+describe Tumblfetch::CLI, '#version' do
+  it 'should print correct version' do
+    output = capture(:stdout) { subject.version }
+    expect(output).to include Tumblfetch::VERSION
+  end
+end
+
+describe Tumblfetch::CLI, '#init' do
+  context 'when ~/.tumblr is nonexistent' do
+    it 'should print execute `tumblr`' do
+      File.stub(:exist?).and_return(false)
+      output = capture(:stderr) { subject.init }
+      expect(output).to include Tumblfetch::CLI::EXECUTE_TUMBLR_MSG
     end
   end
 
-  describe '#init' do
-    context 'when ~/.tumblr is nonexistent' do
-      it 'should print execute `tumblr`' do
-        File.stub(:exist?).and_return(false)
-        output = capture(:stderr) { subject.init }
-        expect(output).to include Tumblfetch::CLI::EXECUTE_TUMBLR_MSG
-      end
-    end
-
+  context 'when ~/.tumblr exist' do
     context 'when .tumblfetch is nonexistent' do
       it 'should generate a .tumblfetch' do
         output = capture(:stdout) { subject.init }
