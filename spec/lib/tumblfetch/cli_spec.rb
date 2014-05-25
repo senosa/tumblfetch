@@ -14,7 +14,9 @@ describe Tumblfetch::CLI, '#init' do
   context 'when ~/.tumblr is nonexistent' do
     it 'should print execute `tumblr`' do
       File.stub(:exist?).and_return(false)
-      expect(output).to include Tumblfetch::CLI::EXECUTE_TUMBLR_MSG
+      msg =  "`~/.tumblr` can't be found. Run `tumblr` for generating it.\n"
+      msg << "For details, see https://github.com/tumblr/tumblr_client#the-irb-console"
+      expect(output).to include msg
     end
   end
 
@@ -26,14 +28,16 @@ describe Tumblfetch::CLI, '#init' do
       end
 
       it 'should print success message' do
-        expect(output).to include Tumblfetch::CLI::SETTINGS_GENERATED_MSG
+        msg = "`.tumblfetch` has been placed in this directory."
+        expect(output).to include msg
       end
     end
 
     context 'when .tumblfetch already exist' do
       it 'should print warning message' do
         File.stub(:exist?).and_return(true)
-        expect(output).to include Tumblfetch::CLI::SETTINGS_EXIST_MSG
+        msg = "`.tumblfetch` already exists in this directory."
+        expect(output).to include msg
       end
     end
   end
