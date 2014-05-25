@@ -32,7 +32,7 @@ describe Tumblfetch::CLI, '#init' do
 
     context 'when .tumblfetch already exist' do
       it 'should print warning message' do
-        File.open('.tumblfetch', 'w').close
+        File.stub(:exist?).and_return(true)
         expect(output).to include Tumblfetch::CLI::SETTINGS_EXIST_MSG
       end
     end
