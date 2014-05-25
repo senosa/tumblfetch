@@ -3,6 +3,8 @@ require 'tumblfetch'
 
 module Tumblfetch
   class CLI < Thor
+  include Thor::Actions
+
     SETTINGS_EXIST_MSG =<<-EOS
 `.tumblfetch` already exists in this directory.
     EOS
@@ -18,7 +20,7 @@ For details, see https://github.com/tumblr/tumblr_client#the-irb-console
 
     desc 'version', 'Print a version'
     def version
-      puts Tumblfetch::VERSION
+      say Tumblfetch::VERSION
     end
 
     desc 'init', 'Generate a .tumblfetch'
