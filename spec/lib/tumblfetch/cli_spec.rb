@@ -21,7 +21,7 @@ describe Tumblfetch::CLI, '#init' do
   context 'when ~/.tumblr exist' do
     context 'when .tumblfetch is nonexistent' do
       it 'should generate a .tumblfetch' do
-        subject.init
+        output
         File.exist?('.tumblfetch').should be_true
       end
 
