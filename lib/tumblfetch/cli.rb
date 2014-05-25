@@ -26,10 +26,10 @@ For details, see https://github.com/tumblr/tumblr_client#the-irb-console
     desc 'init', 'Generate a .tumblfetch'
     def init
       if File.exist?(File.join(ENV['HOME'], '.tumblr'))
-        if File.exist?('./.tumblfetch')
+        if File.exist?('.tumblfetch')
           puts(SETTINGS_EXIST_MSG)
         else
-          File.open('./.tumblfetch', 'w') do |file|
+          File.open('.tumblfetch', 'w') do |file|
             Tumblfetch.write_settings_template_to(file)
           end
           puts(SETTINGS_GENERATED_MSG)

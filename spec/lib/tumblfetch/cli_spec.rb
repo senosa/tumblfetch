@@ -22,7 +22,7 @@ describe Tumblfetch::CLI, '#init' do
     context 'when .tumblfetch is nonexistent' do
       it 'should generate a .tumblfetch' do
         subject.init
-        File.exist?('./.tumblfetch').should be_true
+        File.exist?('.tumblfetch').should be_true
       end
 
       it 'should print success message' do
@@ -32,7 +32,7 @@ describe Tumblfetch::CLI, '#init' do
 
     context 'when .tumblfetch already exist' do
       it 'should print warning message' do
-        File.open('./.tumblfetch', 'w').close
+        File.open('.tumblfetch', 'w').close
         expect(output).to include Tumblfetch::CLI::SETTINGS_EXIST_MSG
       end
     end
