@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'tumblfetch/cli'
+require 'pathname'
 
 describe Tumblfetch::CLI, '#version' do
   subject { capture(:stdout) { Tumblfetch::CLI.new.version } }
@@ -9,8 +10,14 @@ end
 describe Tumblfetch::CLI, '#init' do
   subject { capture(:stdout) { Tumblfetch::CLI.new.init } }
   let(:dottumblr) { File.join(ENV['HOME'], '.tumblr') }
+  let(:templatefile) {
+    path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.tumblfetch'
+    Pathname.new(path).realpath.to_s
+  }
 
   before do
+    File.stub(:exist?).and_return(false)
+    File.stub(:exist?).with(templatefile).and_return(true)
     File.stub(:exist?).with(dottumblr).and_return(dot_tumblr_exist)
     File.stub(:exist?).with('.tumblfetch').and_return(dot_tumblfetch_exist)
   end
@@ -38,7 +45,7 @@ describe Tumblfetch::CLI, '#init' do
     context 'when .tumblfetch is NON-existent' do
       let(:dot_tumblfetch_exist) { false }
 
-      before { @msg = "`.tumblfetch` has been placed in this directory." }
+      before { @msg = "create  .tumblfetch" }
 
       it { should include @msg }
     

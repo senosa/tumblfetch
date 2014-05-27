@@ -5,6 +5,10 @@ module Tumblfetch
   class CLI < Thor
     include Thor::Actions
 
+    def self.source_root
+      File.dirname(__FILE__)
+    end
+
     desc 'version', 'Print a version'
     def version
       say Tumblfetch::VERSION
@@ -21,10 +25,7 @@ module Tumblfetch
       if File.exist?('.tumblfetch')
         say "`.tumblfetch` already exists in this directory.", :red
       else
-        File.open('.tumblfetch', 'w') do |file|
-          Tumblfetch.write_settings_template_to(file)
-        end
-        say "`.tumblfetch` has been placed in this directory.", :green
+        copy_file 'templates/.tumblfetch', '.tumblfetch'
       end
     end
   end
