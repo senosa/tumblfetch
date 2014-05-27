@@ -3,37 +3,27 @@ require 'tumblfetch'
 
 module Tumblfetch
   class CLI < Thor
-    SETTINGS_EXIST_MSG =<<-EOS
-`.tumblfetch` already exists in this directory.
-    EOS
-
-    SETTINGS_GENERATED_MSG =<<-EOS
-`.tumblfetch` has been placed in this directory.
-    EOS
-
-    EXECUTE_TUMBLR_MSG =<<-EOS
-`~/.tumblr` can't be found. Run `tumblr` for generating it.
-For details, see https://github.com/tumblr/tumblr_client#the-irb-console
-    EOS
+    include Thor::Actions
 
     desc 'version', 'Print a version'
     def version
-      puts Tumblfetch::VERSION
+      say Tumblfetch::VERSION
     end
 
     desc 'init', 'Generate a .tumblfetch'
     def init
       if File.exist?(File.join(ENV['HOME'], '.tumblr'))
-        if File.exist?('./.tumblfetch')
-          $stderr.puts(SETTINGS_EXIST_MSG)
+        if File.exist?('.tumblfetch')
+          say "`.tumblfetch` already exists in this directory.", :red
         else
-          File.open('./.tumblfetch', 'w') do |file|
+          File.open('.tumblfetch', 'w') do |file|
             Tumblfetch.write_settings_template_to(file)
           end
-          puts(SETTINGS_GENERATED_MSG)
+          say "`.tumblfetch` has been placed in this directory.", :green
         end
       else
-        $stderr.puts(EXECUTE_TUMBLR_MSG)
+        say "`~/.tumblr` can't be found. Run `tumblr` for generating it.", :red
+        say "For details, see https://github.com/tumblr/tumblr_client#the-irb-console", :red
       end
     end
   end
