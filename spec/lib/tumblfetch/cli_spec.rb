@@ -27,8 +27,7 @@ describe Tumblfetch::CLI, '#init' do
     let(:dot_tumblfetch_exist) { false }
 
     before do
-      @msg =  "`~/.tumblr` can't be found. Run `tumblr` for generating it.\n"
-      @msg << "For details, see https://github.com/tumblr/tumblr_client#the-irb-console"
+      @msg =  "`~/.tumblr` can't be found. Run `tumblr` for generating it."
     end
 
     it { should include @msg }
@@ -66,6 +65,60 @@ describe Tumblfetch::CLI, '#init' do
         subject
         expect(FileTest.exist?('.tumblfetch')).to be_false
       end
+    end
+  end
+end
+
+describe Tumblfetch::CLI, '#fetch' do
+  subject { capture(:stdout) { Tumblfetch::CLI.new.fetch } }
+  let(:dottumblr) { File.join(ENV['HOME'], '.tumblr') }
+
+  context 'when ~/.tumblr is NON-existent' do
+    before do
+      File.stub(:exist?).with(dottumblr).and_return(false)
+      @msg = "`~/.tumblr` can't be found. Run `tumblr` for generating it."
+    end
+
+    it { should include @msg }
+  end
+
+  context 'when .tumblfetch is NON-existent' do
+    before do
+      File.stub(:exist?).with(dottumblr).and_return(true)
+      File.stub(:exist?).with('.tumblfetch').and_return(false)
+      @msg = "`.tumblfetch` can't be found. Run `tumblfetch init` for generating it."
+    end
+
+    it { should include @msg }
+  end
+
+  context 'when both settings file exist' do
+    before do
+      File.stub(:exist?).with(dottumblr).and_return(true)
+      File.stub(:exist?).with('.tumblfetch').and_return(true)
+      Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 0})
+      @msg = "Start fetching."
+    end
+
+    it { should include @msg }
+
+    context 'when posts == 0' do
+      before do
+        Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 0})
+        @msg = 'No new post.'
+      end
+
+      it { should include @msg }
+    end
+
+    context 'when posts == 99' do
+      before do
+        Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 99, photos: 123})
+        Tumblfetch::Fetcher.any_instance.stub(:download)
+        @msg = '123 photos (in 99 posts) are found.'
+      end
+
+      it { should include @msg }
     end
   end
 end
