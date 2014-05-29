@@ -12,25 +12,38 @@ module Tumblfetch
 
     desc 'init', 'Generate a .tumblfetch'
     def init
-      return unless dot_tumblr_exist
+      return unless dot_tumblr_exist?
 
       if File.exist?('.tumblfetch')
         say "`.tumblfetch` already exists in this directory.", :red
-      else
-        copy_file 'templates/.tumblfetch', '.tumblfetch'
+        return
       end
+
+      copy_file 'templates/.tumblfetch', '.tumblfetch'
     end
 
     desc 'fetch', 'Fetch'
     def fetch
-      return unless dot_tumblr_exist
+      return unless dot_tumblr_exist?
 
-      if File.exist?('.tumblfetch')
-        # Start fetching
-        say "Start fetching."
-      else
+      unless File.exist?('.tumblfetch')
         say "`.tumblfetch` can't be found. Run `tumblfetch init` for generating it.", :red
+        return
       end
+
+      say "Start fetching."
+
+      f = Tumblfetch::Fetcher.new
+      result = f.analyze
+
+      if result[:posts] == 0
+        say "No new post."
+        return
+      end
+
+      say "#{result[:photos]} photos (in #{result[:posts]} posts) are found."
+
+      f.download
     end
 
     def self.source_root
@@ -38,7 +51,7 @@ module Tumblfetch
     end
 
     no_tasks do
-      def dot_tumblr_exist
+      def dot_tumblr_exist?
         if File.exist?(File.join(ENV['HOME'], '.tumblr')) then true
         else
           say "`~/.tumblr` can't be found. Run `tumblr` for generating it.", :red
