@@ -33,6 +33,12 @@ module Tumblfetch
       end
 
       photos = []
+      posts.each do |post|
+        post['photos'].each do |photo|
+          photos << photo
+        end
+      end
+      
       {photos: photos.size, posts: posts.size}
     end
 

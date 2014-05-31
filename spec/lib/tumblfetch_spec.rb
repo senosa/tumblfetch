@@ -23,7 +23,13 @@ describe Tumblfetch::Fetcher, '#analyze' do
       subject.config = {'blog_name' => 'tt','last_fetch_id' => nil }
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
-        .and_return { {'posts' => [{'id' => 123}, {'id' => 456}]} }
+        .and_return do
+          {'posts' => [
+            {'id' => 123, 'photos' => []},
+            {'id' => 456, 'photos' => []}
+            ]
+          }
+        end
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 20})
         .and_return { {'posts' => []} }
@@ -35,21 +41,66 @@ describe Tumblfetch::Fetcher, '#analyze' do
     it 'should return :posts == 1' do
       subject.config = {'last_fetch_id' => :the_last}
       Tumblr::Client.any_instance.stub(:posts)
-        .and_return { {'posts' => [{'id' => 987}, {'id' => :the_last}, {'id' => 321}]} }
+        .and_return do
+          {'posts' => [
+            {'id' => 987, 'photos' => []},
+            {'id' => :the_last},
+            {'id' => 321}
+            ]
+          }
+        end
       expect(subject.analyze[:posts]).to eq 1
     end
   end
 
   context 'when last fetch post is in second response' do
-    it 'should return :posts == 5' do
+    it 'should return correct :posts' do
       subject.config = {'blog_name' => 'tt','last_fetch_id' => :the_last}
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
-        .and_return { {'posts' => [{'id' => 999}, {'id' => 888}, {'id' => 777}]} }
+        .and_return do
+          {'posts' => [
+            {'id' => 99, 'photos' => []}
+            ]
+          }
+        end
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 20})
-        .and_return { {'posts' => [{'id' => 666}, {'id' => :the_last}, {'id' => 444}]} }
-      expect(subject.analyze[:posts]).to eq 4
+        .and_return do
+          {'posts' => [
+            {'id' => 88, 'photos' => []},
+            {'id' => 77, 'photos' => []},
+            {'id' => :the_last}
+            ]
+          }
+        end
+      expect(subject.analyze[:posts]).to eq 3
+    end
+  end
+
+  context 'NON photoset' do
+    it 'should return correct :photos' do
+      subject.config = {'last_fetch_id' => :the_last}
+      Tumblr::Client.any_instance.stub(:posts).and_return do
+        {'posts' => [
+          {'id' => 987, 'photos' => ['photo1']},
+          {'id' => :the_last}]
+        }
+      end
+      expect(subject.analyze[:photos]).to eq 1
+    end
+  end
+
+  context '1 photoset' do
+    it 'should return correct :photos' do
+      subject.config = {'last_fetch_id' => :the_last}
+      Tumblr::Client.any_instance.stub(:posts).and_return do
+        {'posts' => [
+          {'id' => 987, 'photos' => ['photo1', 'photo2']},
+          {'id' => :the_last}]
+        }
+      end
+      expect(subject.analyze[:photos]).to eq 2
     end
   end
 
