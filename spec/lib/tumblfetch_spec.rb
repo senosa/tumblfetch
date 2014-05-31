@@ -33,22 +33,22 @@ describe Tumblfetch::Fetcher, '#analyze' do
 
   context 'when 1 New post in 3 posts' do
     it 'should return :posts == 1' do
-      subject.config = {'last_fetch_id' => 654}
+      subject.config = {'last_fetch_id' => :the_last}
       Tumblr::Client.any_instance.stub(:posts)
-        .and_return { {'posts' => [{'id' => 987}, {'id' => 654}, {'id' => 321}]} }
+        .and_return { {'posts' => [{'id' => 987}, {'id' => :the_last}, {'id' => 321}]} }
       expect(subject.analyze[:posts]).to eq 1
     end
   end
 
   context 'when last fetch post is in second response' do
     it 'should return :posts == 5' do
-      subject.config = {'blog_name' => 'tt','last_fetch_id' => 555}
+      subject.config = {'blog_name' => 'tt','last_fetch_id' => :the_last}
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
         .and_return { {'posts' => [{'id' => 999}, {'id' => 888}, {'id' => 777}]} }
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 20})
-        .and_return { {'posts' => [{'id' => 666}, {'id' => 555}, {'id' => 444}]} }
+        .and_return { {'posts' => [{'id' => 666}, {'id' => :the_last}, {'id' => 444}]} }
       expect(subject.analyze[:posts]).to eq 4
     end
   end
