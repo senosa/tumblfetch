@@ -94,6 +94,8 @@ describe Tumblfetch::CLI, '#fetch' do
 
   context 'when both settings file exist' do
     before do
+      path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.tumblfetch'
+      FileUtils.cp(path, '.')
       File.stub(:exist?).with(dottumblr).and_return(true)
       File.stub(:exist?).with('.tumblfetch').and_return(true)
       Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 0})
@@ -119,6 +121,10 @@ describe Tumblfetch::CLI, '#fetch' do
       end
 
       it { should include @msg }
+    end
+
+    after do
+      FileUtils.remove('.tumblfetch')
     end
   end
 end
