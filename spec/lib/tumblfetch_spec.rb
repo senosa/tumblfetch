@@ -5,16 +5,28 @@ describe Tumblfetch::Fetcher, '#analyze' do
   before do
     path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
     FileUtils.cp(path, '.')
-    Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
+    subject.stub(:create_posts_list).and_return { [] }
   end
 
   it { expect(subject.analyze).to be_a Hash }
   it { expect(subject.analyze).to include :photos }
   it { expect(subject.analyze).to include :posts }
 
+  after do
+    FileUtils.remove('.tumblfetch')
+  end
+end
+
+describe Tumblfetch::Fetcher, '#create_posts_list' do
+  before do
+    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
+    FileUtils.cp(path, '.')
+    Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
+  end
+
   context 'when No post' do
     it 'should return :posts == 0' do
-      expect(subject.analyze[:posts]).to eq 0
+      expect(subject.send(:create_posts_list).size).to eq 0
     end
   end
 
@@ -33,7 +45,7 @@ describe Tumblfetch::Fetcher, '#analyze' do
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 20})
         .and_return { {'posts' => []} }
-      expect(subject.analyze[:posts]).to eq 2
+      expect(subject.send(:create_posts_list).size).to eq 2
     end
   end
 
@@ -49,7 +61,7 @@ describe Tumblfetch::Fetcher, '#analyze' do
             ]
           }
         end
-      expect(subject.analyze[:posts]).to eq 1
+      expect(subject.send(:create_posts_list).size).to eq 1
     end
   end
 
@@ -74,33 +86,46 @@ describe Tumblfetch::Fetcher, '#analyze' do
             ]
           }
         end
-      expect(subject.analyze[:posts]).to eq 3
+      expect(subject.send(:create_posts_list).size).to eq 3
     end
   end
 
-  context 'NON photoset' do
+  after do
+    FileUtils.remove('.tumblfetch')
+  end
+end
+
+describe Tumblfetch::Fetcher, '#create_photos_list' do
+  before do
+    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
+    FileUtils.cp(path, '.')
+  end
+
+  context '1 photo in 1 post' do
     it 'should return correct :photos' do
-      subject.config = {'last_fetch_id' => :the_last}
-      Tumblr::Client.any_instance.stub(:posts).and_return do
-        {'posts' => [
-          {'id' => 987, 'photos' => ['photo1']},
-          {'id' => :the_last}]
-        }
-      end
-      expect(subject.analyze[:photos]).to eq 1
+      posts = [
+        {'id' => 987, 'photos' => ['photo1']}
+      ]
+      expect(subject.send(:create_photos_list, posts).size).to eq 1
     end
   end
 
-  context '1 photoset' do
+  context '2 photos in 1 post(photoset)' do
     it 'should return correct :photos' do
-      subject.config = {'last_fetch_id' => :the_last}
-      Tumblr::Client.any_instance.stub(:posts).and_return do
-        {'posts' => [
-          {'id' => 987, 'photos' => ['photo1', 'photo2']},
-          {'id' => :the_last}]
-        }
-      end
-      expect(subject.analyze[:photos]).to eq 2
+      posts = [
+        {'id' => 987, 'photos' => ['photo1', 'photo2']}
+      ]
+      expect(subject.send(:create_photos_list, posts).size).to eq 2
+    end
+  end
+
+  context '3 photos in 2 posts' do
+    it 'should return correct :photos' do
+      posts = [
+        {'id' => 987, 'photos' => ['photo1']},
+        {'id' => 654, 'photos' => ['photo2', 'photo3']}
+      ]
+      expect(subject.send(:create_photos_list, posts).size).to eq 3
     end
   end
 

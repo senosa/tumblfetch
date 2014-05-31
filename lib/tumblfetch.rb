@@ -10,6 +10,17 @@ module Tumblfetch
     end
 
     def analyze
+      posts = create_posts_list
+      photos = create_photos_list(posts)
+
+      {photos: photos.size, posts: posts.size}
+    end
+
+    def download
+    end
+
+    private
+    def create_posts_list
       configuration = YAML.load_file(File.join(ENV['HOME'], '.tumblr'))
       Tumblr.configure do |config|
         Tumblr::Config::VALID_OPTIONS_KEYS.each do |key|
@@ -31,18 +42,18 @@ module Tumblfetch
           offset += 20
         end
       end
+      posts
+    end
 
+    def create_photos_list(posts)
       photos = []
       posts.each do |post|
         post['photos'].each do |photo|
           photos << photo
         end
       end
-      
-      {photos: photos.size, posts: posts.size}
+      photos
     end
-
-    def download
-    end
+    
   end
 end
