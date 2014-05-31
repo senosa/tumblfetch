@@ -24,6 +24,8 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
     Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
   end
 
+  it { expect(subject.send(:create_posts_list)).to be_a Array }
+
   context 'when No post' do
     it 'should return :posts == 0' do
       expect(subject.send(:create_posts_list).size).to eq 0
@@ -100,6 +102,8 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
     path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
     FileUtils.cp(path, '.')
   end
+
+  it { expect(subject.send(:create_photos_list, [])).to be_a Array }
 
   context '1 photo in 1 post' do
     it 'should return correct :photos' do
