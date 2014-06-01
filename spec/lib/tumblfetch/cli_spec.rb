@@ -27,7 +27,7 @@ describe Tumblfetch::CLI, '#init' do
     let(:dot_tumblfetch_exist) { false }
 
     before do
-      @msg =  "`~/.tumblr` can't be found. Run `tumblr` for generating it."
+      @msg =  "`~/.tumblr` can't be found."
     end
 
     it { should include @msg }
@@ -76,7 +76,7 @@ describe Tumblfetch::CLI, '#fetch' do
   context 'when ~/.tumblr is NON-existent' do
     before do
       File.stub(:exist?).with(dottumblr).and_return(false)
-      @msg = "`~/.tumblr` can't be found. Run `tumblr` for generating it."
+      @msg = "`~/.tumblr` can't be found."
     end
 
     it { should include @msg }
@@ -86,7 +86,7 @@ describe Tumblfetch::CLI, '#fetch' do
     before do
       File.stub(:exist?).with(dottumblr).and_return(true)
       File.stub(:exist?).with('.tumblfetch').and_return(false)
-      @msg = "`.tumblfetch` can't be found. Run `tumblfetch init` for generating it."
+      @msg = "`.tumblfetch` can't be found."
     end
 
     it { should include @msg }
