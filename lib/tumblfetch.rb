@@ -49,11 +49,16 @@ module Tumblfetch
       photos = []
       posts.each do |post|
         post['photos'].each do |photo|
-          photos << photo
+          photos << Tumblfetch::Photo.new
         end
       end
       photos
     end
     
   end
+
+  class Photo
+    #
+  end
+
 end

@@ -106,30 +106,51 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
   it { expect(subject.send(:create_photos_list, [])).to be_a Array }
 
   context '1 photo in 1 post' do
-    it 'should return correct :photos' do
-      posts = [
+    let(:posts) do
+      [
         {'id' => 987, 'photos' => ['photo1']}
       ]
+    end
+
+    it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 1
+    end
+
+    it 'should contain 1 Photo object' do
+      expect(subject.send(:create_photos_list, posts)[0]).to be_a Tumblfetch::Photo
     end
   end
 
   context '2 photos in 1 post(photoset)' do
-    it 'should return correct :photos' do
-      posts = [
+    let(:posts) do
+      [
         {'id' => 987, 'photos' => ['photo1', 'photo2']}
       ]
+    end
+
+    it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 2
+    end
+
+    it 'should contain 2 Photo objects' do
+      expect(subject.send(:create_photos_list, posts)[1]).to be_a Tumblfetch::Photo
     end
   end
 
   context '3 photos in 2 posts' do
-    it 'should return correct :photos' do
-      posts = [
+    let(:posts) do
+      [
         {'id' => 987, 'photos' => ['photo1']},
         {'id' => 654, 'photos' => ['photo2', 'photo3']}
       ]
+    end
+
+    it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 3
+    end
+
+    it 'should contain 3 Photo objects' do
+      expect(subject.send(:create_photos_list, posts)[2]).to be_a Tumblfetch::Photo
     end
   end
 
