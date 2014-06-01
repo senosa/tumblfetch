@@ -1,4 +1,5 @@
 require 'tumblfetch/version'
+require 'tumblfetch/photo'
 require 'tumblr_client'
 require 'yaml'
 
@@ -48,17 +49,17 @@ module Tumblfetch
     def create_photos_list(posts)
       photos = []
       posts.each do |post|
-        post['photos'].each do |photo|
-          photos << Tumblfetch::Photo.new
+        post['photos'].each_with_index do |photo, idx|
+          photos << Tumblfetch::Photo.new(
+            post_id: post['id'],
+            link_url: post['link_url'],
+            photoset_idx: idx,
+            hash: photo
+          )
         end
       end
       photos
     end
     
   end
-
-  class Photo
-    #
-  end
-
 end
