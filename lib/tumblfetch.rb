@@ -4,9 +4,9 @@ require 'yaml'
 
 module Tumblfetch
   class Fetcher
-    attr_writer :config
-    def initialize
-      @config = YAML.load_file('.tumblfetch')
+    attr_accessor :config
+    def initialize(config)
+      @config = config
     end
 
     def analyze

@@ -3,9 +3,7 @@ require 'tumblfetch'
 
 describe Tumblfetch::Fetcher, '#analyze' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
-    @f = Tumblfetch::Fetcher.new
+    @f = Tumblfetch::Fetcher.new('dummy_conf')
     @f.stub(:create_posts_list).and_return { [] }
   end
 
@@ -13,18 +11,13 @@ describe Tumblfetch::Fetcher, '#analyze' do
   it { should be_a Hash }
   it { should include :photos }
   it { should include :posts }
-
-  after do
-    FileUtils.remove('.tumblfetch')
-  end
 end
 
 describe Tumblfetch::Fetcher, '#create_posts_list' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
     Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
-    @f = Tumblfetch::Fetcher.new
+    config = {'blog_name' => 'tt', 'last_fetch_id' => nil}
+    @f = Tumblfetch::Fetcher.new(config)
   end
 
   subject { @f.send(:create_posts_list) }
@@ -33,7 +26,6 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
 
   context 'when 2 posts and first fetch' do
     before do
-      @f.config = {'blog_name' => 'tt','last_fetch_id' => nil }
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
         .and_return do
@@ -52,7 +44,7 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
 
   context 'when 1 New post in 3 posts' do
     before do
-      @f.config = {'last_fetch_id' => :the_last}
+      @f.config['last_fetch_id'] = :the_last
       Tumblr::Client.any_instance.stub(:posts)
         .and_return do
           {'posts' => [
@@ -68,7 +60,7 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
 
   context 'when last fetch post is in second response' do
     before do
-      @f.config = {'blog_name' => 'tt','last_fetch_id' => :the_last}
+      @f.config['last_fetch_id'] = :the_last
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
         .and_return do
@@ -90,17 +82,11 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
     end
     it { should have(3).posts }
   end
-
-  after do
-    FileUtils.remove('.tumblfetch')
-  end
 end
 
 describe Tumblfetch::Fetcher, '#create_photos_list' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
-    @f = Tumblfetch::Fetcher.new
+    @f = Tumblfetch::Fetcher.new('dummy_conf')
     @posts = []
   end
 
@@ -123,9 +109,5 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
       @posts <<  {'id' => 654, 'photos' => ['photo2', 'photo3']}
     end
     it { should have(3).photos }
-  end
-
-  after do
-    FileUtils.remove('.tumblfetch')
   end
 end
