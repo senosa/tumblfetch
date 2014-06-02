@@ -33,7 +33,7 @@ module Tumblfetch
 
       say "Start fetching."
 
-      f = Tumblfetch::Fetcher.new
+      f = Tumblfetch::Fetcher.new(YAML.load_file('.tumblfetch'))
       result = f.analyze
 
       if result[:posts] == 0

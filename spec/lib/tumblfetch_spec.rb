@@ -3,38 +3,29 @@ require 'tumblfetch'
 
 describe Tumblfetch::Fetcher, '#analyze' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
-    subject.stub(:create_posts_list).and_return { [] }
+    @f = Tumblfetch::Fetcher.new('dummy_conf')
+    @f.stub(:create_posts_list).and_return { [] }
   end
 
-  it { expect(subject.analyze).to be_a Hash }
-  it { expect(subject.analyze).to include :photos }
-  it { expect(subject.analyze).to include :posts }
-
-  after do
-    FileUtils.remove('.tumblfetch')
-  end
+  subject { @f.analyze }
+  it { should be_a Hash }
+  it { should include :photos }
+  it { should include :posts }
 end
 
 describe Tumblfetch::Fetcher, '#create_posts_list' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
     Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
+    config = {'blog_name' => 'tt', 'last_fetch_id' => nil}
+    @f = Tumblfetch::Fetcher.new(config)
   end
 
-  it { expect(subject.send(:create_posts_list)).to be_a Array }
-
-  context 'when No post' do
-    it 'should return :posts == 0' do
-      expect(subject.send(:create_posts_list).size).to eq 0
-    end
-  end
+  subject { @f.send(:create_posts_list) }
+  it { should be_a Array }
+  it { should be_empty }
 
   context 'when 2 posts and first fetch' do
-    it 'should return :posts == 2' do
-      subject.config = {'blog_name' => 'tt','last_fetch_id' => nil }
+    before do
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
         .and_return do
@@ -47,13 +38,13 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 20})
         .and_return { {'posts' => []} }
-      expect(subject.send(:create_posts_list).size).to eq 2
     end
+    it { should have(2).posts }
   end
 
   context 'when 1 New post in 3 posts' do
-    it 'should return :posts == 1' do
-      subject.config = {'last_fetch_id' => :the_last}
+    before do
+      @f.config['last_fetch_id'] = :the_last
       Tumblr::Client.any_instance.stub(:posts)
         .and_return do
           {'posts' => [
@@ -63,13 +54,13 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
             ]
           }
         end
-      expect(subject.send(:create_posts_list).size).to eq 1
     end
+    it { should have(1).post }
   end
 
   context 'when last fetch post is in second response' do
-    it 'should return correct :posts' do
-      subject.config = {'blog_name' => 'tt','last_fetch_id' => :the_last}
+    before do
+      @f.config['last_fetch_id'] = :the_last
       Tumblr::Client.any_instance.stub(:posts)
         .with('tt', {:type => 'photo', :offset => 0})
         .and_return do
@@ -88,62 +79,36 @@ describe Tumblfetch::Fetcher, '#create_posts_list' do
             ]
           }
         end
-      expect(subject.send(:create_posts_list).size).to eq 3
     end
-  end
-
-  after do
-    FileUtils.remove('.tumblfetch')
+    it { should have(3).posts }
   end
 end
 
 describe Tumblfetch::Fetcher, '#create_photos_list' do
   before do
-    path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
-    FileUtils.cp(path, '.')
     Tumblfetch::Photo.stub(:new) { double 'photo' }
+    @f = Tumblfetch::Fetcher.new('dummy_conf')
+    @posts = []
   end
 
-  it { expect(subject.send(:create_photos_list, [])).to be_a Array }
+  subject { @f.send(:create_photos_list, @posts) }
+  it { should be_a Array }
 
-  context '1 photo in 1 post' do
-    let(:posts) do
-      [
-        {'id' => 987, 'photos' => ['photo1']}
-      ]
-    end
-
-    it 'should return correct :photos' do
-      expect(subject.send(:create_photos_list, posts).size).to eq 1
-    end
+  context 'when 1 photo in 1 post' do
+    before { @posts << {'id' => 987, 'photos' => ['photo1']} }
+    it { should have(1).photo }
   end
 
-  context '2 photos in 1 post(photoset)' do
-    let(:posts) do
-      [
-        {'id' => 987, 'photos' => ['photo1', 'photo2']}
-      ]
-    end
-
-    it 'should return correct :photos' do
-      expect(subject.send(:create_photos_list, posts).size).to eq 2
-    end
+  context 'when 2 photos in 1 post(photoset)' do
+    before { @posts << {'id' => 987, 'photos' => ['photo1', 'photo2']} }
+    it { should have(2).photos }
   end
 
-  context '3 photos in 2 posts' do
-    let(:posts) do
-      [
-        {'id' => 987, 'photos' => ['photo1']},
-        {'id' => 654, 'photos' => ['photo2', 'photo3']}
-      ]
+  context 'when 3 photos in 2 posts' do
+    before do
+      @posts <<  {'id' => 987, 'photos' => ['photo1']}
+      @posts <<  {'id' => 654, 'photos' => ['photo2', 'photo3']}
     end
-
-    it 'should return correct :photos' do
-      expect(subject.send(:create_photos_list, posts).size).to eq 3
-    end
-  end
-
-  after do
-    FileUtils.remove('.tumblfetch')
+    it { should have(3).photos }
   end
 end
