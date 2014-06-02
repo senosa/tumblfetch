@@ -5,19 +5,25 @@ require 'yaml'
 
 module Tumblfetch
   class Fetcher
-    attr_accessor :config
+    attr_accessor :config, :photos
     def initialize(config)
       @config = config
+      @photos = nil
     end
 
     def analyze
       posts = create_posts_list
-      photos = create_photos_list(posts)
+      @photos = create_photos_list(posts)
 
       {photos: photos.size, posts: posts.size}
     end
 
     def download
+      result = []
+      @photos.each do |photo|
+        result << photo.download
+      end
+      result
     end
 
     private

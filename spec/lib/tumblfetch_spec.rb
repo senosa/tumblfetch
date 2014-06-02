@@ -13,6 +13,24 @@ describe Tumblfetch::Fetcher, '#analyze' do
   it { should include :posts }
 end
 
+describe Tumblfetch::Fetcher, '#download' do
+  before do
+    @f = Tumblfetch::Fetcher.new('dummy_conf')
+    @p = double 'photo'
+    @p.stub(:download).and_return { 'OK' }
+    @f.photos = [@p]
+  end
+
+  subject { @f.download }
+  it { should have(1).result }
+  it { expect(subject[0]).to include 'OK' }
+
+  context 'when 2 photos in @photos' do
+    before { @f.photos << @p }
+    it { should have(2).results }
+  end
+end
+
 describe Tumblfetch::Fetcher, '#create_posts_list' do
   before do
     Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => []} }
