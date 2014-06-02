@@ -101,6 +101,7 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
   before do
     path = File.dirname(__FILE__) + '/../../lib/tumblfetch/templates/.tumblfetch'
     FileUtils.cp(path, '.')
+    Tumblfetch::Photo.stub(:new) { double 'photo' }
   end
 
   it { expect(subject.send(:create_photos_list, [])).to be_a Array }
@@ -115,10 +116,6 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
     it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 1
     end
-
-    it 'should contain 1 Photo object' do
-      expect(subject.send(:create_photos_list, posts)[0]).to be_a Tumblfetch::Photo
-    end
   end
 
   context '2 photos in 1 post(photoset)' do
@@ -130,10 +127,6 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
 
     it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 2
-    end
-
-    it 'should contain 2 Photo objects' do
-      expect(subject.send(:create_photos_list, posts)[1]).to be_a Tumblfetch::Photo
     end
   end
 
@@ -147,10 +140,6 @@ describe Tumblfetch::Fetcher, '#create_photos_list' do
 
     it 'should return correct :photos' do
       expect(subject.send(:create_photos_list, posts).size).to eq 3
-    end
-
-    it 'should contain 3 Photo objects' do
-      expect(subject.send(:create_photos_list, posts)[2]).to be_a Tumblfetch::Photo
     end
   end
 

@@ -50,12 +50,7 @@ module Tumblfetch
       photos = []
       posts.each do |post|
         post['photos'].each_with_index do |photo, idx|
-          photos << Tumblfetch::Photo.new(
-            post_id: post['id'],
-            link_url: post['link_url'],
-            photoset_idx: idx,
-            hash: photo
-          )
+          photos << Tumblfetch::Photo.new(post: post, photoset_idx: idx)
         end
       end
       photos
