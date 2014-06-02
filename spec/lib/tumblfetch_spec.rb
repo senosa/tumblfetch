@@ -86,6 +86,7 @@ end
 
 describe Tumblfetch::Fetcher, '#create_photos_list' do
   before do
+    Tumblfetch::Photo.stub(:new) { double 'photo' }
     @f = Tumblfetch::Fetcher.new('dummy_conf')
     @posts = []
   end
