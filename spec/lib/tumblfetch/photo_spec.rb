@@ -42,7 +42,6 @@ describe Tumblfetch::Photo, '#download' do
     ]
     @post = {
       'id' => 123,
-      'link_url' => 'TheURL',
       'photos' => @photos
     }
   end
@@ -52,6 +51,7 @@ describe Tumblfetch::Photo, '#download' do
   it 'should download from @original_url' do
     subject
     expect(File.exist?('123.jpg')).to be_true
+    expect(FastImage.size('123.jpg')).to eq [480, 480]
   end
 
   context 'when open(@original_url) raise exception' do
@@ -68,6 +68,24 @@ describe Tumblfetch::Photo, '#download' do
     it 'should create correct filename' do
       subject
       expect(File.exist?('123_0.jpg')).to be_true
+    end
+  end
+
+  context 'when link_url is REAL original' do
+    before do
+      @photos = [
+        {'original_size' => {'url' => 'NotRealOriginalURL', 'width' => 1280}}
+      ]
+      @post = {
+        'id' => 123,
+        'link_url' => 'https://raw.githubusercontent.com/wiki/senosa/tumblfetch/images/over1280.jpeg',
+        'photos' => @photos
+      }
+    end
+    it 'should download from link_url' do
+      subject
+      expect(File.exist?('123.jpeg')).to be_true
+      expect(FastImage.size('123.jpeg')).to eq [1300, 500]
     end
   end
 end

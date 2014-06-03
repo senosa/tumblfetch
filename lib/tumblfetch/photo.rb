@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'fileutils'
+require 'fastimage'
 
 module Tumblfetch
   class Photo
@@ -14,14 +15,15 @@ module Tumblfetch
 
     def download
       result = []
-      extname = File.extname(@original_url)
+      target_url = link_url_is_real_original? ? @link_url : @original_url
+      extname = File.extname(target_url)
       filename = @post_id.to_s
       filename << "_#{@photoset_idx}" if @photoset_idx
       filename << extname
 
       begin
         open(filename, "wb") do |file|
-          open(@original_url) do |data|
+          open(target_url) do |data|
             file.write(data.read)
           end
         end
@@ -33,6 +35,16 @@ module Tumblfetch
       end
 
       result
+    end
+
+    private
+    def link_url_is_real_original?
+      return false unless @original_width == 1280
+      return false unless @link_url =~ /.+(.jp(e)*g|.png|.gif)\z/
+      real_original_size = FastImage.size(@link_url)
+      return false unless real_original_size
+      return false if real_original_size.first <= 1280
+      true
     end
 
   end
