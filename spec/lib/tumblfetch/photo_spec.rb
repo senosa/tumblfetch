@@ -45,9 +45,8 @@ describe Tumblfetch::Photo, '#download' do
       'link_url' => 'TheURL',
       'photos' => @photos
     }
-    @p = Tumblfetch::Photo.new(post: @post, photoset_idx: 0)
   end
-  subject { @p.download }
+  subject { Tumblfetch::Photo.new(post: @post, photoset_idx: 0).download }
   it { should have(1).result }
   its(:first) { should include 'success' }
   it 'should download from @original_url' do
@@ -56,17 +55,7 @@ describe Tumblfetch::Photo, '#download' do
   end
 
   context 'when open(@original_url) raise exception' do
-    before do
-      @photos = [
-        {'original_size' => {'url' => 'invalid_url', 'width' => 480}}
-      ]
-      @post = {
-        'id' => 123,
-        'link_url' => 'TheURL',
-        'photos' => @photos
-      }
-      @p = Tumblfetch::Photo.new(post: @post, photoset_idx: 0)
-    end
+    before { @photos[0]['original_size']['url'] = 'invalid_url' }
     its(:first) { should include 'fail' }
     it 'should NOT create needless image file' do
       subject
@@ -74,22 +63,11 @@ describe Tumblfetch::Photo, '#download' do
     end
   end
 
-  context 'photoset' do
-    before do
-      @photos = [
-        {'original_size' => {'url' => 'https://raw.githubusercontent.com/wiki/senosa/tumblfetch/images/under500.jpg', 'width' => 480}},
-        {'original_size' => {'url' => '2ndURL', 'width' => 480}}
-      ]
-      @post = {
-        'id' => 456,
-        'link_url' => 'TheURL',
-        'photos' => @photos
-      }
-      @p = Tumblfetch::Photo.new(post: @post, photoset_idx: 0)
-    end
+  context 'when photoset' do
+    before { @photos << {'2ndPhoto' => nil} }
     it 'should create correct filename' do
       subject
-      expect(File.exist?('456_0.jpg')).to be_true
+      expect(File.exist?('123_0.jpg')).to be_true
     end
   end
 end
