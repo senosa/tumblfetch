@@ -14,13 +14,13 @@ module Tumblfetch
     end
 
     def download
-      result = []
       target_url = link_url_is_real_original? ? @link_url : @original_url
       extname = File.extname(target_url)
       filename = @post_id.to_s
       filename << "_#{@photoset_idx}" if @photoset_idx
       filename << extname
 
+      result = []
       begin
         open(filename, "wb") do |file|
           open(target_url) do |data|
@@ -30,8 +30,7 @@ module Tumblfetch
         result << 'success'
       rescue
         FileUtils.rm(filename)
-        # pp $!
-        result << 'fail'
+        result << "#{@post_id}: #{$!.message}"
       end
 
       result

@@ -19,9 +19,14 @@ module Tumblfetch
     end
 
     def download
-      result = []
+      result = {success: 0, fails: []}
       @photos.each do |photo|
-        result << photo.download
+        r = photo.download
+        if r == ['success']
+          result[:success] += 1
+        else
+          result[:fails] << r
+        end
       end
       result
     end

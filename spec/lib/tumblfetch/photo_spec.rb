@@ -56,7 +56,7 @@ describe Tumblfetch::Photo, '#download' do
 
   context 'when open(@original_url) raise exception' do
     before { @photos[0]['original_size']['url'] = 'invalid_url' }
-    its(:first) { should include 'fail' }
+    its(:first) { should include '123: No such file or directory @ rb_sysopen - invalid_url' }
     it 'should NOT create needless image file' do
       subject
       expect(File.exist?('123.jpg')).to be_false

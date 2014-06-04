@@ -17,17 +17,24 @@ describe Tumblfetch::Fetcher, '#download' do
   before do
     @f = Tumblfetch::Fetcher.new('dummy_conf')
     @p = double 'photo'
-    @p.stub(:download).and_return { 'OK' }
+    @p.stub(:download).and_return { ['success'] }
     @f.photos = [@p]
   end
 
   subject { @f.download }
-  it { should have(1).result }
-  it { expect(subject[0]).to include 'OK' }
+  its([:success]) { should eq 1 }
+  its([:fails]) { should eq [] }
 
   context 'when 2 photos in @photos' do
     before { @f.photos << @p }
-    it { should have(2).results }
+    its([:success]) { should eq 2 }
+  end
+
+  context 'when Photo#download return fail' do
+    before { @p.stub(:download).and_return { 'fail' } }
+
+    its([:success]) { should eq 0 }
+    its([:fails]) { should eq ['fail'] }
   end
 end
 
