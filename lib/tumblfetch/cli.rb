@@ -43,7 +43,15 @@ module Tumblfetch
 
       say "#{result[:photos]} photos (in #{result[:posts]} posts) are found."
 
-      f.download
+      result = f.download
+
+      say "#{result[:success]} photos are downloaded.", :green
+      unless result[:fails].empty?
+        say "#{result[:fails].size} photos can't download.", :red
+        result[:fails].each do |f|
+          say "  #{f[0]}", :red
+        end
+      end
     end
 
     def self.source_root

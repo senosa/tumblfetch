@@ -115,12 +115,26 @@ describe Tumblfetch::CLI, '#fetch' do
 
     context 'when posts == 99' do
       before do
-        Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 99, photos: 123})
-        Tumblfetch::Fetcher.any_instance.stub(:download)
-        @msg = '123 photos (in 99 posts) are found.'
+        Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 99, photos: 12})
+        Tumblfetch::Fetcher.any_instance.stub(:download).and_return({success: 9, fails: []})
+        @msg = '12 photos (in 99 posts) are found.'
+        @successmsg = '9 photos are downloaded'
+        @failmsg = "photos can't download"
       end
 
       it { should include @msg }
+      it { should include @successmsg }
+      it { should_not include @failmsg }
+    end
+
+    context 'when fails exist' do
+      before do
+        Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 99, photos: 123})
+        Tumblfetch::Fetcher.any_instance.stub(:download).and_return({success: 12, fails: ['FailMSG']})
+        @failmsg = "1 photos can't download"
+      end
+
+      it { should include @failmsg }
     end
 
     after do
