@@ -10,30 +10,30 @@ module Tumblfetch
       say Tumblfetch::VERSION
     end
 
-    desc 'init', 'Generate a .tumblfetch'
+    desc 'init', 'Generate a .fetch'
     def init
       return unless dot_tumblr_exist?
 
-      if File.exist?('.tumblfetch')
-        say "`.tumblfetch` already exists in this directory.", :red
+      if File.exist?('.fetch')
+        say "`.fetch` already exists in this directory.", :red
         return
       end
 
-      copy_file 'templates/.tumblfetch', '.tumblfetch'
+      copy_file 'templates/.fetch', '.fetch'
     end
 
     desc 'fetch', 'Fetch'
     def fetch
       return unless dot_tumblr_exist?
 
-      unless File.exist?('.tumblfetch')
-        say "`.tumblfetch` can't be found. Run `tumblfetch init` for generating it.", :red
+      unless File.exist?('.fetch')
+        say "`.fetch` can't be found. Run `tumblfetch init` for generating it.", :red
         return
       end
 
       say "Start fetching."
 
-      f = Tumblfetch::Fetcher.new(YAML.load_file('.tumblfetch'))
+      f = Tumblfetch::Fetcher.new(YAML.load_file('.fetch'))
       result = f.analyze
 
       if result[:posts] == 0

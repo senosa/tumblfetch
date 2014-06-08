@@ -10,7 +10,7 @@ Fetch images from tumblr.
 
     $ cd ~/path/to/download
     $ tumblfetch init
-    $ vi .tumblfetch
+    $ vi .fetch
     $ tumblfetch
 
 ## Contributing

@@ -11,7 +11,7 @@ describe Tumblfetch::CLI, '#init' do
   subject { capture(:stdout) { Tumblfetch::CLI.new.init } }
   let(:dottumblr) { File.join(ENV['HOME'], '.tumblr') }
   let(:templatefile) {
-    path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.tumblfetch'
+    path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.fetch'
     Pathname.new(path).realpath.to_s
   }
 
@@ -19,12 +19,12 @@ describe Tumblfetch::CLI, '#init' do
     File.stub(:exist?).and_return(false)
     File.stub(:exist?).with(templatefile).and_return(true)
     File.stub(:exist?).with(dottumblr).and_return(dot_tumblr_exist)
-    File.stub(:exist?).with('.tumblfetch').and_return(dot_tumblfetch_exist)
+    File.stub(:exist?).with('.fetch').and_return(dot_fetch_exist)
   end
 
   context 'when ~/.tumblr is NON-existent' do
     let(:dot_tumblr_exist) { false }
-    let(:dot_tumblfetch_exist) { false }
+    let(:dot_fetch_exist) { false }
 
     before do
       @msg =  "`~/.tumblr` can't be found."
@@ -32,38 +32,38 @@ describe Tumblfetch::CLI, '#init' do
 
     it { should include @msg }
 
-    it 'should NOT generate a .tumblfetch' do
+    it 'should NOT generate a .fetch' do
       subject
-      expect(FileTest.exist?('.tumblfetch')).to be_false
+      expect(FileTest.exist?('.fetch')).to be_false
     end
   end
 
   context 'when ~/.tumblr exist' do
     let(:dot_tumblr_exist) { true }
-    
-    context 'when .tumblfetch is NON-existent' do
-      let(:dot_tumblfetch_exist) { false }
 
-      before { @msg = "create  .tumblfetch" }
+    context 'when .fetch is NON-existent' do
+      let(:dot_fetch_exist) { false }
+
+      before { @msg = "create  .fetch" }
 
       it { should include @msg }
-    
-      it 'should generate a .tumblfetch' do
+
+      it 'should generate a .fetch' do
         subject
-        expect(FileTest.exist?('.tumblfetch')).to be_true
+        expect(FileTest.exist?('.fetch')).to be_true
       end
     end
 
-    context 'when .tumblfetch already exist' do
-      let(:dot_tumblfetch_exist) { true }
+    context 'when .fetch already exist' do
+      let(:dot_fetch_exist) { true }
 
-      before { @msg = "`.tumblfetch` already exists in this directory." }
-    
+      before { @msg = "`.fetch` already exists in this directory." }
+
       it { should include @msg }
 
-      it 'should NOT generate a .tumblfetch' do
+      it 'should NOT generate a .fetch' do
         subject
-        expect(FileTest.exist?('.tumblfetch')).to be_false
+        expect(FileTest.exist?('.fetch')).to be_false
       end
     end
   end
@@ -82,11 +82,11 @@ describe Tumblfetch::CLI, '#fetch' do
     it { should include @msg }
   end
 
-  context 'when .tumblfetch is NON-existent' do
+  context 'when .fetch is NON-existent' do
     before do
       File.stub(:exist?).with(dottumblr).and_return(true)
-      File.stub(:exist?).with('.tumblfetch').and_return(false)
-      @msg = "`.tumblfetch` can't be found."
+      File.stub(:exist?).with('.fetch').and_return(false)
+      @msg = "`.fetch` can't be found."
     end
 
     it { should include @msg }
@@ -94,10 +94,10 @@ describe Tumblfetch::CLI, '#fetch' do
 
   context 'when both settings file exist' do
     before do
-      path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.tumblfetch'
+      path = File.dirname(__FILE__) + '/../../../lib/tumblfetch/templates/.fetch'
       FileUtils.cp(path, '.')
       File.stub(:exist?).with(dottumblr).and_return(true)
-      File.stub(:exist?).with('.tumblfetch').and_return(true)
+      File.stub(:exist?).with('.fetch').and_return(true)
       Tumblfetch::Fetcher.any_instance.stub(:analyze).and_return({posts: 0})
       @msg = "Start fetching."
     end
@@ -138,7 +138,7 @@ describe Tumblfetch::CLI, '#fetch' do
     end
 
     after do
-      FileUtils.remove('.tumblfetch')
+      FileUtils.remove('.fetch')
     end
   end
 end
