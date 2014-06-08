@@ -1,5 +1,6 @@
 require 'thor'
 require 'tumblfetch'
+require 'yaml'
 
 module Tumblfetch
   class CLI < Thor
@@ -12,14 +13,18 @@ module Tumblfetch
 
     desc 'init', 'Generate a .fetch'
     def init
-      return unless dot_tumblr_exist?
-
       if File.exist?('.fetch')
         say "`.fetch` already exists in this directory.", :red
         return
       end
 
       copy_file 'templates/.fetch', '.fetch'
+
+      if File.exist?(File.join(ENV['HOME'], '.tumblr'))
+        tumblr_client_config = YAML.load_file(File.join(ENV['HOME'], '.tumblr'))
+        config = YAML.load_file('.fetch').merge(tumblr_client_config)
+        open('.fetch', 'w') {|file| file.write(config.to_yaml) }
+      end
     end
 
     desc 'fetch', 'Fetch'

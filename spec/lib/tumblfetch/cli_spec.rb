@@ -26,45 +26,54 @@ describe Tumblfetch::CLI, '#init' do
     let(:dot_tumblr_exist) { false }
     let(:dot_fetch_exist) { false }
 
-    before do
-      @msg =  "`~/.tumblr` can't be found."
+    it { should include "create  .fetch" }
+
+    it 'should generate a .fetch' do
+      subject
+      expect(FileTest.exist?('.fetch')).to be_true
     end
 
-    it { should include @msg }
-
-    it 'should NOT generate a .fetch' do
+    it 'should NOT contain credentials' do
       subject
-      expect(FileTest.exist?('.fetch')).to be_false
+      config = YAML.load_file('.fetch')
+      expect(config['consumer_key']).to be_nil
     end
   end
 
   context 'when ~/.tumblr exist' do
     let(:dot_tumblr_exist) { true }
-
-    context 'when .fetch is NON-existent' do
-      let(:dot_fetch_exist) { false }
-
-      before { @msg = "create  .fetch" }
-
-      it { should include @msg }
-
-      it 'should generate a .fetch' do
-        subject
-        expect(FileTest.exist?('.fetch')).to be_true
-      end
+    let(:dot_fetch_exist) { false }
+    before do
+      YAML.stub(:load_file).with(File.join(ENV['HOME'], '.tumblr'))
+        .and_return({'consumer_key' => 'TheKey'})
+      YAML.stub(:load_file).with('.fetch')
+        .and_return({'blog_name' => 'abc'})
     end
 
-    context 'when .fetch already exist' do
-      let(:dot_fetch_exist) { true }
+    it { should include "create  .fetch" }
 
-      before { @msg = "`.fetch` already exists in this directory." }
+    it 'should contain credentials' do
+      subject
+      config = open('.fetch').read
+      expect(config).to include "consumer_key: TheKey\n"
+    end
 
-      it { should include @msg }
+    it 'should NOT change template value' do
+      subject
+      config = open('.fetch').read
+      expect(config).to include "blog_name: abc\n"
+    end
+  end
 
-      it 'should NOT generate a .fetch' do
-        subject
-        expect(FileTest.exist?('.fetch')).to be_false
-      end
+  context 'when .fetch already exist' do
+    let(:dot_tumblr_exist) { true }
+    let(:dot_fetch_exist) { true }
+
+    it { should include "`.fetch` already exists in this directory." }
+
+    it 'should NOT generate a .fetch' do
+      subject
+      expect(FileTest.exist?('.fetch')).to be_false
     end
   end
 end

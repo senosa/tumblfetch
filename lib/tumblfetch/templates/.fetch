@@ -1,2 +1,6 @@
 blog_name: testing-fetcher.tumblr.com
-last_fetch_id: null
+last_fetch_id:
+consumer_key:
+consumer_secret:
+oauth_token:
+oauth_token_secret:
