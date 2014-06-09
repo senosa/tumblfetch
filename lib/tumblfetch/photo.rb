@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'fileutils'
 require 'fastimage'
+require 'open_uri_redirections'
 
 module Tumblfetch
   class Photo
@@ -23,7 +24,7 @@ module Tumblfetch
       result = []
       begin
         open(filename, "wb") do |file|
-          open(target_url) do |data|
+          open(target_url, :allow_redirections => :safe) do |data|
             file.write(data.read)
           end
         end
