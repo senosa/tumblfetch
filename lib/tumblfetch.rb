@@ -1,7 +1,6 @@
 require 'tumblfetch/version'
 require 'tumblfetch/photo'
 require 'tumblr_client'
-require 'yaml'
 
 module Tumblfetch
   class Fetcher
@@ -33,11 +32,11 @@ module Tumblfetch
 
     private
     def create_posts_list
-      configuration = YAML.load_file(File.join(ENV['HOME'], '.tumblr'))
-      Tumblr.configure do |config|
-        Tumblr::Config::VALID_OPTIONS_KEYS.each do |key|
-          config.send(:"#{key}=", configuration[key.to_s])
-        end
+      Tumblr.configure do |conf|
+        conf.consumer_key = @config['consumer_key']
+        conf.consumer_secret = @config['consumer_secret']
+        conf.oauth_token = @config['access_token']
+        conf.oauth_token_secret = @config['access_token_secret']
       end
       client = Tumblr::Client.new
 
@@ -66,6 +65,6 @@ module Tumblfetch
       end
       photos
     end
-    
+
   end
 end
