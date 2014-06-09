@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'faraday', '= 0.8.9'
   spec.add_runtime_dependency 'thor'
   spec.add_runtime_dependency 'fastimage'
+  spec.add_runtime_dependency 'open_uri_redirections'
 
   spec.add_development_dependency "bundler", "~> 1.5"
   spec.add_development_dependency "rake"
