@@ -4,8 +4,18 @@ require 'tumblfetch/photo'
 describe Tumblfetch::Photo, '.new' do
   before do
     @photos = [
-      {'original_size' => {'url' => '1stURL', 'width' => 1280}},
-      {'original_size' => {'url' => '2ndURL', 'width' => 500}}
+      {'original_size' => {'url' => '1stURL', 'width' => 1280},
+        'alt_sizes' => [
+          {'url' => 'alt_0_URL'},
+          {'url' => 'alt_1_URL'}
+          ]
+        },
+      {'original_size' => {'url' => '2ndURL', 'width' => 500},
+        'alt_sizes' => [
+          {'url' => 'alt_0_URL'},
+          {'url' => 'alt_1_URL'}
+          ]
+        }
     ]
     @post = {
       'id' => 123,
@@ -38,7 +48,12 @@ end
 describe Tumblfetch::Photo, '#download' do
   before do
     @photos = [
-      {'original_size' => {'url' => 'https://raw.githubusercontent.com/wiki/senosa/tumblfetch/images/under500.jpg', 'width' => 480}}
+      {'original_size' => {'url' => 'https://raw.githubusercontent.com/wiki/senosa/tumblfetch/images/under500.jpg', 'width' => 480},
+        'alt_sizes' => [
+          {'url' => 'alt_0_URL'},
+          {'url' => 'alt_1_URL'}
+          ]
+        }
     ]
     @post = {
       'id' => 123,
@@ -74,7 +89,12 @@ describe Tumblfetch::Photo, '#download' do
   context 'when link_url is REAL original' do
     before do
       @photos = [
-        {'original_size' => {'url' => 'NotRealOriginalURL', 'width' => 1280}}
+        {'original_size' => {'url' => 'NotRealOriginalURL', 'width' => 1280},
+        'alt_sizes' => [
+          {'url' => 'alt_0_URL'},
+          {'url' => 'alt_1_URL'}
+          ]
+        }
       ]
       @post = {
         'id' => 123,

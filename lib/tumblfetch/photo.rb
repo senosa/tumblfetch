@@ -13,10 +13,15 @@ module Tumblfetch
       @photoset_idx = post['photos'].size == 1 ? nil : photoset_idx
       @original_width = post['photos'][photoset_idx]['original_size']['width']
       @original_url = post['photos'][photoset_idx]['original_size']['url']
+      @alt_1_url = post['photos'][photoset_idx]['alt_sizes'][1]['url']
     end
 
     def download
-      target_url = link_url_is_real_original? ? @link_url : @original_url
+      # strategy1
+      # target_url = link_url_is_real_original? ? @link_url : @original_url
+
+      target_url = strategy2
+
       extname = File.extname(target_url)
       filename = @post_id.to_s
       filename << "_#{@photoset_idx}" if @photoset_idx
@@ -36,6 +41,20 @@ module Tumblfetch
       end
 
       result
+    end
+
+    def strategy2
+      target_url = nil
+      targets = [@link_url, @original_url, @alt_1_url]
+      targets.each do |url|
+        begin
+          target_url = url if FastImage.size(url)
+        rescue
+        end
+        break if target_url
+      end
+      # target_url ||= @alt_0_url # It is equal @original_url
+      target_url ||= @original_url
     end
 
     private
