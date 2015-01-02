@@ -87,52 +87,6 @@ describe Tumblfetch::Fetcher, '#analyze' do
     end
 
     it { should be_a Integer }
-
-    context 'when 1 photo in 1 post' do
-      before do
-        Tumblr::Client.any_instance.stub(:posts)
-          .with('tt', {:type => 'photo', :offset => 0})
-          .and_return do
-            {'posts' => [
-              {'id' => 123, 'photos' => ['photo1']},
-              {'id' => :the_last}
-              ]
-            }
-          end
-      end
-      it { should eq 1 }
-    end
-
-    context 'when 2 photos in 1 post(photoset)' do
-      before do
-        Tumblr::Client.any_instance.stub(:posts)
-          .with('tt', {:type => 'photo', :offset => 0})
-          .and_return do
-            {'posts' => [
-              {'id' => 123, 'photos' => ['photo1', 'photo2']},
-              {'id' => :the_last}
-              ]
-            }
-          end
-      end
-      it { should eq 2 }
-    end
-
-    context 'when 3 photos in 2 posts' do
-      before do
-        Tumblr::Client.any_instance.stub(:posts)
-          .with('tt', {:type => 'photo', :offset => 0})
-          .and_return do
-            {'posts' => [
-              {'id' => 123, 'photos' => ['photo1', 'photo2']},
-              {'id' => 456, 'photos' => ['photo3']},
-              {'id' => :the_last}
-              ]
-            }
-          end
-      end
-      it { should eq 3 }
-    end
   end
 
 end
