@@ -62,7 +62,6 @@ module Tumblfetch
         end
         break if target_url
       end
-      # target_url ||= @alt_0_url # It is equal @original_url
       target_url ||= @original_url
     end
 
