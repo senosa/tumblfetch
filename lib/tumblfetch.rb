@@ -18,7 +18,7 @@ module Tumblfetch
     end
 
     def download
-      result = {success: 0, fails: []}
+      result = {success: 0, fails: [], last_fetch_id: nil}
       @photos.each do |photo|
         r = photo.download
         if r == ['success']
@@ -27,6 +27,7 @@ module Tumblfetch
           result[:fails] << r
         end
       end
+      result[:last_fetch_id] = @photos.first.post_id
       result
     end
 

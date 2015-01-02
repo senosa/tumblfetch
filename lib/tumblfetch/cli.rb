@@ -62,6 +62,9 @@ module Tumblfetch
         say "#{result[:fails].size} photos can't download.", :red
         result[:fails].each {|fail| say "  #{fail}", :red }
       end
+
+      config['last_fetch_id'] = result[:last_fetch_id]
+      open('.fetch', 'w') {|file| file.write(config.to_yaml) }
     end
 
     def self.source_root

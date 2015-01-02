@@ -97,6 +97,7 @@ describe Tumblfetch::Fetcher, '#download' do
     @fetcher = Tumblfetch::Fetcher.new('conf')
     @photo = double 'photo'
     @photo.stub(:download).and_return { ['success'] }
+    @photo.stub(:post_id).and_return { 123 }
     @fetcher.photos = [@photo]
   end
 
