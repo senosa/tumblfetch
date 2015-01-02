@@ -44,12 +44,12 @@ describe Tumblfetch::Photo do
     context 'when original_url is valid' do
       let(:original_url) { 'http://www.snest.net/tumblfetch/under500.jpg' }
 
-      it { should include '1.jpg' }
+      it { should include '1.jpeg' }
 
       context 'with photoset_idx' do
         let(:photoset_idx) { 3 }
 
-        it { should include '1_3.jpg' }
+        it { should include '1_3.jpeg' }
       end
     end
   end

@@ -21,19 +21,14 @@ module Tumblfetch
     end
 
     def filename
-      extname = File.extname(target_url)
       filename = @post_id.to_s
       filename << "_#{@photoset_idx}" if @photoset_idx
-      filename << extname
+      filename << '.' + FastImage.type(target_url).to_s
     end
 
     def download
       target_url = strategy2
-
-      extname = File.extname(target_url)
-      filename = @post_id.to_s
-      filename << "_#{@photoset_idx}" if @photoset_idx
-      filename << extname
+      filename = self.filename
 
       result = []
       begin
