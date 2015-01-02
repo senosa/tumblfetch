@@ -27,11 +27,7 @@ module Tumblfetch
       filename << extname
     end
 
-    private
     def download
-      # strategy1
-      # target_url = link_url_is_real_original? ? @link_url : @original_url
-
       target_url = strategy2
 
       extname = File.extname(target_url)
@@ -55,6 +51,7 @@ module Tumblfetch
       result
     end
 
+    private
     def strategy2
       target_url = nil
       targets = [@link_url, @original_url, @alt_1_url]
@@ -67,15 +64,6 @@ module Tumblfetch
       end
       # target_url ||= @alt_0_url # It is equal @original_url
       target_url ||= @original_url
-    end
-
-    def link_url_is_real_original?
-      return false unless @original_width == 1280
-      return false unless @link_url =~ /.+(.jp(e)*g|.png|.gif)\z/
-      real_original_size = FastImage.size(@link_url)
-      return false unless real_original_size
-      return false if real_original_size.first <= 1280
-      true
     end
 
   end
