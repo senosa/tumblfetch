@@ -44,25 +44,20 @@ module Tumblfetch
       end
 
       say "Start fetching."
-
       f = Tumblfetch::Fetcher.new(config)
       result = f.analyze
-
       if result[:posts] == 0
         say "No new post."
         return
       end
-
       say "#{result[:photos]} photos (in #{result[:posts]} posts) are found."
 
       result = f.download
-
       say "#{result[:success]} photos are downloaded.", :green
       unless result[:fails].empty?
         say "#{result[:fails].size} photos can't download.", :red
         result[:fails].each {|fail| say "  #{fail}", :red }
       end
-
       config['last_fetch_id'] = result[:last_fetch_id]
       open('.fetch', 'w') {|file| file.write(config.to_yaml) }
     end
