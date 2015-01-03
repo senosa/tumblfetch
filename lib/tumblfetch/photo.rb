@@ -6,6 +6,7 @@ require 'open_uri_redirections'
 
 module Tumblfetch
   class Photo
+    attr_accessor :post_id
     def initialize(post_id:, link_url:, photoset_idx:, original_url:, original_width:, alt_1_url:)
       @post_id = post_id
       @link_url = link_url
