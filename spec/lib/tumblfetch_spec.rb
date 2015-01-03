@@ -5,88 +5,88 @@ describe Tumblfetch::Fetcher, '#analyze' do
   subject { @fetcher.analyze }
   before do
     @empty_array = []
-    Tumblr::Client.any_instance.stub(:posts).and_return { {'posts' => @empty_array} }
+    allow_any_instance_of(Tumblr::Client).to receive(:posts).and_return({'posts' => @empty_array})
     config = {'blog_name' => 'tt', 'last_fetch_id' => nil}
     @fetcher = Tumblfetch::Fetcher.new(config)
   end
 
-  it { should be_a Hash }
-  it { should have_key :photos }
-  it { should have_key :posts }
+  it { is_expected.to be_a Hash }
+  it { is_expected.to have_key :photos }
+  it { is_expected.to have_key :posts }
 
   describe '[:posts]' do
     subject { @fetcher.analyze[:posts] }
 
-    it { should be_a Integer }
+    it { is_expected.to be_a Integer }
 
     context 'when 2 posts and first fetch' do
       before do
-        Tumblr::Client.any_instance.stub(:posts)
+        allow_any_instance_of(Tumblr::Client).to receive(:posts)
           .with('tt', {:type => 'photo', :offset => 0})
-          .and_return do
+          .and_return(
             {'posts' => [
               {'id' => 123, 'photos' => @empty_array},
               {'id' => 456, 'photos' => @empty_array}
               ]
             }
-          end
-        Tumblr::Client.any_instance.stub(:posts)
+          )
+        allow_any_instance_of(Tumblr::Client).to receive(:posts)
           .with('tt', {:type => 'photo', :offset => 20})
-          .and_return { {'posts' => @empty_array} }
+          .and_return({'posts' => @empty_array})
       end
-      it { should eq 2 }
+      it { is_expected.to eq 2 }
     end
 
     context 'when 1 New post in 3 posts' do
       before do
         @fetcher.config['last_fetch_id'] = :the_last
-        Tumblr::Client.any_instance.stub(:posts)
-          .and_return do
+        allow_any_instance_of(Tumblr::Client).to receive(:posts)
+          .and_return(
             {'posts' => [
               {'id' => 987, 'photos' => @empty_array},
               {'id' => :the_last},
               {'id' => 321}
               ]
             }
-          end
+          )
       end
-      it { should eq 1 }
+      it { is_expected.to eq 1 }
     end
 
     context 'when last fetch post is in second response' do
       before do
         @fetcher.config['last_fetch_id'] = :the_last
-        Tumblr::Client.any_instance.stub(:posts)
+        allow_any_instance_of(Tumblr::Client).to receive(:posts)
           .with('tt', {:type => 'photo', :offset => 0})
-          .and_return do
+          .and_return(
             {'posts' => [
               {'id' => 99, 'photos' => @empty_array}
               ]
             }
-          end
-        Tumblr::Client.any_instance.stub(:posts)
+          )
+        allow_any_instance_of(Tumblr::Client).to receive(:posts)
           .with('tt', {:type => 'photo', :offset => 20})
-          .and_return do
+          .and_return(
             {'posts' => [
               {'id' => 88, 'photos' => @empty_array},
               {'id' => 77, 'photos' => @empty_array},
               {'id' => :the_last}
               ]
             }
-          end
+          )
       end
-      it { should eq 3 }
+      it { is_expected.to eq 3 }
     end
   end
 
   describe '[:photos]' do
     subject { @fetcher.analyze[:photos] }
     before do
-      Tumblfetch::Photo.stub(:new) { double 'photo' }
+      allow(Tumblfetch::Photo).to receive(:new) { double 'photo' }
       @fetcher.config['last_fetch_id'] = :the_last
     end
 
-    it { should be_a Integer }
+    it { is_expected.to be_a Integer }
   end
 
 end
@@ -96,44 +96,44 @@ describe Tumblfetch::Fetcher, '#download' do
   before do
     @fetcher = Tumblfetch::Fetcher.new('conf')
     @photo = double 'photo'
-    @photo.stub(:download).and_return { ['success'] }
-    @photo.stub(:post_id).and_return { 123 }
+    allow(@photo).to receive(:download).and_return ['success']
+    allow(@photo).to receive(:post_id).and_return 123
     @fetcher.photos = [@photo]
   end
 
-  it { should be_a Hash }
-  it { should have_key :success }
-  it { should have_key :fails }
+  it { is_expected.to be_a Hash }
+  it { is_expected.to have_key :success }
+  it { is_expected.to have_key :fails }
 
   describe '[:success]' do
     subject { @fetcher.download[:success] }
 
-    it { should be_a Integer }
+    it { is_expected.to be_a Integer }
 
     context 'when 2 photos all success' do
       before { @fetcher.photos << @photo }
-      it { should eq 2 }
+      it { is_expected.to eq 2 }
     end
 
     context 'when Photo#download return fail' do
-      before { @photo.stub(:download).and_return { 'fail' } }
-      it { should eq 0 }
+      before { allow(@photo).to receive(:download).and_return 'fail' }
+      it { is_expected.to eq 0 }
     end
   end
 
   describe '[:fails]' do
     subject { @fetcher.download[:fails] }
 
-    it { should be_a Array }
+    it { is_expected.to be_a Array }
 
     context 'when 2 photos all success' do
       before { @fetcher.photos << @photo }
-      it { should be_empty }
+      it { is_expected.to be_empty }
     end
 
     context 'when Photo#download return fail' do
-      before { @photo.stub(:download).and_return { 'fail' } }
-      it { should have(1).fails }
+      before { allow(@photo).to receive(:download).and_return 'fail' }
+      it { is_expected.to eq ['fail'] }
     end
   end
 
